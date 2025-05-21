@@ -162,7 +162,7 @@ public class UIManager : MonoBehaviour
             else
             {
                 DisplayRegisterWindow();
-                DisplayError("Login failed (reason: " + message + ")");
+                DisplayError("Registration failed (reason: " + message + ")");
             }
         });
     }
