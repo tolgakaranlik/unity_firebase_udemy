@@ -193,7 +193,7 @@ public class UIManager : MonoBehaviour
             else
             {
                 DisplayForgotPasswordWindow();
-                DisplayError("Login failed (reason: " + message + ")");
+                DisplayError("Password reset failed (reason: " + message + ")");
             }
         });
     }
