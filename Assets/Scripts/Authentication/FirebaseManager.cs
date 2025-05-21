@@ -137,4 +137,44 @@ public class FirebaseManager : MonoBehaviour
             onComplete?.Invoke(true, "OK");
         }
     }
+
+    public void ResetPassword(string userName, Action<bool, string> onComplete)
+    {
+        StartCoroutine(ResetPasswordNow(userName, onComplete));
+    }
+
+    IEnumerator ResetPasswordNow(string userName, Action<bool, string> onComplete)
+    {
+        var authTask = auth.SendPasswordResetEmailAsync(userName);
+
+        yield return new WaitUntil(predicate: () => authTask.IsCompleted);
+
+        if (authTask.Exception != null)
+        {
+            FirebaseException firebaseEx = authTask.Exception.GetBaseException() as FirebaseException;
+            AuthError errorCode = (AuthError)firebaseEx.ErrorCode;
+
+            string message = "Registration Failed!";
+            switch (errorCode)
+            {
+                case AuthError.MissingEmail:
+                    message = "Missing Email";
+                    break;
+                case AuthError.InvalidEmail:
+                    message = "Invalid Email";
+                    break;
+                default:
+                    message = "Server side error";
+                    Debug.LogError(authTask.Exception.Message);
+
+                    break;
+            }
+
+            onComplete?.Invoke(false, message);
+        }
+        else
+        {
+            onComplete?.Invoke(true, "OK");
+        }
+    }
 }

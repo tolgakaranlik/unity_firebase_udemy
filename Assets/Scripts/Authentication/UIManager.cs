@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using TMPro;
 using UnityEngine;
 
@@ -6,6 +7,7 @@ public class UIManager : MonoBehaviour
 {
     public RectTransform WindowLogin;
     public RectTransform WindowRegister;
+    public RectTransform WindowForgotPassword;
     public RectTransform WindowError;
     public RectTransform WindowSuccess;
     public RectTransform WindowLoading;
@@ -17,13 +19,19 @@ public class UIManager : MonoBehaviour
         DisplayLoginWindow();
     }
 
-    private void HideAllWindows()
+    public void HideAllWindows()
     {
-        HideRegisterWindow();
-        HideLoginWindow();
-        HideErrorBox();
-        HideSuccessBox();
-        HideLoadingWindow();
+        WindowRegister.gameObject.SetActive(false);
+        WindowLogin.gameObject.SetActive(false);
+        WindowError.gameObject.SetActive(false);
+        WindowSuccess.gameObject.SetActive(false);
+        WindowLoading.gameObject.SetActive(false);
+        WindowForgotPassword.gameObject.SetActive(false);
+    }
+
+    public void HideErrorWindow()
+    {
+        WindowError.gameObject.SetActive(false);
     }
 
     public void DisplayRegisterWindow()
@@ -53,27 +61,14 @@ public class UIManager : MonoBehaviour
     {
         HideAllWindows();
         WindowSuccess.gameObject.SetActive(true);
-    }
 
-    public void HideRegisterWindow()
-    {
-        WindowRegister.gameObject.SetActive(false);
+        TextMeshProUGUI txtMessage = WindowSuccess.Find("Message").GetComponent<TextMeshProUGUI>();
+        txtMessage.text = message.Trim();
     }
-    public void HideLoginWindow()
+    public void DisplayForgotPasswordWindow()
     {
-        WindowLogin.gameObject.SetActive(false);
-    }
-    public void HideErrorBox()
-    {
-        WindowError.gameObject.SetActive(false);
-    }
-    public void HideSuccessBox()
-    {
-        WindowSuccess.gameObject.SetActive(false);
-    }
-    public void HideLoadingWindow()
-    {
-        WindowLoading.gameObject.SetActive(false);
+        HideAllWindows();
+        WindowForgotPassword.gameObject.SetActive(true);
     }
 
     public void AttemptToLogin()
@@ -98,7 +93,7 @@ public class UIManager : MonoBehaviour
         DisplayLoadingWindow();
 
         FBManager.Login(txtUserName.text.Trim(), txtPassword.text.Trim(), (result, message) => {
-            HideLoadingWindow();
+            HideAllWindows();
 
             if (result)
             {
@@ -108,6 +103,7 @@ public class UIManager : MonoBehaviour
             }
             else
             {
+                DisplayLoginWindow();
                 DisplayError("Login failed (reason: " + message + ")");
             }
         });
@@ -154,18 +150,59 @@ public class UIManager : MonoBehaviour
         DisplayLoadingWindow();
 
         FBManager.Register(txtUserName.text.Trim(), txtPassword.text.Trim(), (result, message) => {
-            HideLoadingWindow();
+            HideAllWindows();
 
             if (result)
             {
                 DisplaySuccess("Registration successful");
+                StartCoroutine(HideSuccessWindowIn(1));
                 Debug.Log("User id: " + FBManager.UserId);
                 Debug.Log("Display name: " + FBManager.DisplayName);
             }
             else
             {
+                DisplayRegisterWindow();
                 DisplayError("Login failed (reason: " + message + ")");
             }
         });
+    }
+
+    public void ResetPassword()
+    {
+        TMP_InputField txtUserName = WindowForgotPassword.Find("InputUserName/Input").GetComponent<TMP_InputField>();
+
+        // Validation
+        if (string.IsNullOrEmpty(txtUserName.text.Trim()))
+        {
+            DisplayError("Please do not leave 'user name' field blank");
+            return;
+        }
+
+        // Progress
+        DisplayLoadingWindow();
+
+        FBManager.ResetPassword(txtUserName.text.Trim(), (result, message) =>
+        {
+            HideAllWindows();
+
+            if (result)
+            {
+                DisplaySuccess("Password reset was successful");
+                StartCoroutine(HideSuccessWindowIn(1));
+            }
+            else
+            {
+                DisplayForgotPasswordWindow();
+                DisplayError("Login failed (reason: " + message + ")");
+            }
+        });
+    }
+
+    IEnumerator HideSuccessWindowIn(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+
+        HideAllWindows();
+        DisplayLoginWindow();
     }
 }
