@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "419483311452",
+    "project_id": "unityfirebasetest1-6ad64",
+    "storage_bucket": "unityfirebasetest1-6ad64.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:419483311452:android:9effbfddb722ab97c13599",
+        "android_client_info": {
+          "package_name": "com.tolga.test1"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA6dbmqfPkMQ_HnLM1pEu0OUBlfRALuzZA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
